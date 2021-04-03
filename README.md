@@ -52,7 +52,6 @@ react-native-vector-icons: 8.1.0
 @react-native-firebase/auth: 11.2.0
 @react-native-firebase/firestore: 11.2.0
 @react-native-firebase/messaging: 11.2.0
-
 ```
 
 ## Contact
