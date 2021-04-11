@@ -1,52 +1,36 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
 import { COLOR_BLUE, COLOR_GREY } from '../types/consts';
 
 interface ProgressBarProps {
   countGlassesOfWater: number;
   maxCountGlassesOfWater: number;
+  glassCapacity: number;
 }
 
 const ProgressBar = ({
   countGlassesOfWater,
   maxCountGlassesOfWater,
+  glassCapacity,
 }: ProgressBarProps) => {
-  const [width, setWidth] = useState(0);
-  const animatedValue = useRef(new Animated.Value(-1000)).current;
-  const reactive = useRef(new Animated.Value(-1000)).current;
+  const animation = useRef(new Animated.Value(0));
 
   useEffect(() => {
-    Animated.timing(animatedValue, {
-      toValue: reactive,
-      duration: 300,
-      useNativeDriver: true,
+    Animated.timing(animation.current, {
+      toValue: countGlassesOfWater * glassCapacity,
+      duration: 350,
+      useNativeDriver: false,
     }).start();
-  }, [animatedValue, reactive]);
+  }, [countGlassesOfWater, glassCapacity]);
 
-  useEffect(() => {
-    reactive.setValue(
-      -width + (width * countGlassesOfWater) / maxCountGlassesOfWater,
-    );
-  }, [countGlassesOfWater, maxCountGlassesOfWater, reactive, width]);
+  const width = animation.current.interpolate({
+    inputRange: [0, maxCountGlassesOfWater * glassCapacity],
+    outputRange: ['0%', '100%'],
+  });
 
   return (
     <View style={styles.progressBarContainer}>
-      <Animated.View
-        onLayout={(e) => {
-          const newWidth = e.nativeEvent.layout.width;
-          setWidth(newWidth);
-        }}
-        style={[
-          styles.progressBar,
-          {
-            transform: [
-              {
-                translateX: animatedValue,
-              },
-            ],
-          },
-        ]}
-      />
+      <Animated.View style={{ ...styles.progressBar, width }} />
     </View>
   );
 };

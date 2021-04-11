@@ -1,5 +1,11 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  Animated,
+  Easing,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as firestoreDb from '../services/firestore';
 import {
@@ -21,16 +27,47 @@ const BtnAddWater = ({
   userId,
   dateNowString,
 }: BtnAddWaterProps) => {
+  let scaleValue = new Animated.Value(0);
+
+  const glassScale = scaleValue.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 1.1, 1.2],
+  });
+
+  const transformStyle = {
+    ...styles.btnAddWater,
+    ...styles.btnAddWaterActive,
+    transform: [{ scale: glassScale }],
+  };
+
   const handleOnPressAddWater = async (): Promise<void> => {
     await firestoreDb.addWater(userId, dateNowString);
   };
 
   return countGlassesOfWater < maxCountGlassesOfWater ? (
-    <TouchableOpacity
-      style={[styles.btnAddWater, styles.btnAddWaterActive]}
-      onPress={async () => await handleOnPressAddWater()}>
-      <Icon style={styles.iconCup} name="cup-water" />
-    </TouchableOpacity>
+    <TouchableWithoutFeedback
+      onPressIn={() => {
+        scaleValue.setValue(0);
+        Animated.timing(scaleValue, {
+          toValue: 1,
+          duration: 250,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }).start();
+      }}
+      onPress={() => handleOnPressAddWater()}
+      onPressOut={() => {
+        Animated.timing(scaleValue, {
+          toValue: 0,
+          duration: 100,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }).start();
+      }}>
+      <Animated.View style={transformStyle}>
+        <Icon style={styles.iconCup} name="cup-water" />
+      </Animated.View>
+    </TouchableWithoutFeedback>
   ) : (
     <TouchableOpacity
       style={[styles.btnAddWater, styles.btnAddWaterDisabled]}

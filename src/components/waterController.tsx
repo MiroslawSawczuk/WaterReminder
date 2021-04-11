@@ -66,6 +66,7 @@ const WaterController = () => {
         <ProgressBar
           countGlassesOfWater={countGlassesOfWater}
           maxCountGlassesOfWater={maxCountGlassesOfWater}
+          glassCapacity={0.25}
         />
         <View style={styles.totalWaterDrunkContainer}>{totalWaterDrunk}</View>
       </View>
@@ -83,6 +84,7 @@ const styles = StyleSheet.create({
   },
   progressBarContainer: {
     flex: 1,
+    marginTop: 35,
   },
   totalWaterDrunkContainer: {
     marginTop: 4,
